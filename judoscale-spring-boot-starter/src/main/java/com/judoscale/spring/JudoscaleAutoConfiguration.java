@@ -1,5 +1,6 @@
 package com.judoscale.spring;
 
+import com.judoscale.core.MetricsStore;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

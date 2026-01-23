@@ -1,5 +1,8 @@
 package com.judoscale.spring;
 
+import com.judoscale.core.ApiClient;
+import com.judoscale.core.Metric;
+import com.judoscale.core.MetricsStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;

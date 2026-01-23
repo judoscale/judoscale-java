@@ -1,5 +1,7 @@
 package com.judoscale.spring;
 
+import com.judoscale.core.Metric;
+import com.judoscale.core.MetricsStore;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;

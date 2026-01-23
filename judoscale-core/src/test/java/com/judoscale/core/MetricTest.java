@@ -1,4 +1,4 @@
-package com.judoscale.spring;
+package com.judoscale.core;
 
 import org.junit.jupiter.api.Test;
 

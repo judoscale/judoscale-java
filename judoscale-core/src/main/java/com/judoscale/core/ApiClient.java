@@ -1,10 +1,10 @@
-package com.judoscale.spring;
+package com.judoscale.core;
 
 import java.util.List;
 
 /**
  * Interface for the Judoscale API client.
- * Extracted for easier testing.
+ * Extracted for easier testing and to allow different implementations.
  */
 public interface ApiClient {
 

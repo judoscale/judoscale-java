@@ -1,5 +1,7 @@
 package com.judoscale.spring;
 
+import com.judoscale.core.ApiClient;
+import com.judoscale.core.Metric;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;

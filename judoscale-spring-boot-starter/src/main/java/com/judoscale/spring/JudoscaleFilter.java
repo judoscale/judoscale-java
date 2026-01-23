@@ -1,5 +1,6 @@
 package com.judoscale.spring;
 
+import com.judoscale.core.MetricsStore;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
