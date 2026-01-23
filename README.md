@@ -32,13 +32,19 @@ implementation 'com.judoscale:judoscale-spring-boot-starter:0.1.0'
 
 ## Usage
 
-Once added to your project, the library works automatically with zero configuration when running on Heroku or Render with the Judoscale add-on installed.
+### Getting Started
 
-The library will:
+1. **Sign up** at [judoscale.com](https://judoscale.com) and connect your cloud provider (Heroku, Render, AWS, etc.)
+2. **Install the library** using the instructions above
+3. **Set the `JUDOSCALE_URL` environment variable** — You'll find your unique API URL in your Judoscale dashboard
+
+Once configured, the library works automatically. It will:
 
 1. **Measure request queue time** — Captures the time requests spend waiting in your platform's router queue before reaching your application.
 2. **Measure application time** — Captures how long your application takes to process each request.
 3. **Report metrics** — Sends collected metrics to the Judoscale API every 10 seconds.
+
+> **Note:** The library has no impact in development or any environment where `JUDOSCALE_URL` is not set. It's safe to include in your project without affecting local development.
 
 ### Configuration
 
@@ -59,7 +65,7 @@ judoscale.max-request-size-bytes=100000
 judoscale.ignore-large-requests=true
 ```
 
-The API URL is automatically configured via the `JUDOSCALE_URL` environment variable, which is set by the Judoscale add-on.
+The API URL is configured via the `JUDOSCALE_URL` environment variable. You can find your unique API URL in your Judoscale dashboard.
 
 ### Accessing Queue Time
 
