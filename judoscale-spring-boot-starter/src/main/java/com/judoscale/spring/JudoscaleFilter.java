@@ -1,0 +1,123 @@
+package com.judoscale.spring;
+
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.time.Instant;
+
+/**
+ * Servlet filter that measures request queue time and application time.
+ * Queue time is calculated from the X-Request-Start header set by the load balancer.
+ */
+public class JudoscaleFilter implements Filter {
+
+    private static final Logger logger = LoggerFactory.getLogger(JudoscaleFilter.class);
+
+    // Cutoffs for determining the unit of the X-Request-Start header
+    private static final long MILLISECONDS_CUTOFF = Instant.parse("2000-01-01T00:00:00Z").toEpochMilli();
+    private static final long MICROSECONDS_CUTOFF = MILLISECONDS_CUTOFF * 1000;
+    private static final long NANOSECONDS_CUTOFF = MICROSECONDS_CUTOFF * 1000;
+
+    private final MetricsStore metricsStore;
+    private final JudoscaleConfig config;
+
+    public JudoscaleFilter(MetricsStore metricsStore, JudoscaleConfig config) {
+        this.metricsStore = metricsStore;
+        this.config = config;
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+
+        if (!(request instanceof HttpServletRequest httpRequest)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        Instant now = Instant.now();
+        String requestStartHeader = httpRequest.getHeader("X-Request-Start");
+        String requestId = httpRequest.getHeader("X-Request-Id");
+        int contentLength = httpRequest.getContentLength();
+
+        // Track queue time if header is present and request isn't too large
+        if (requestStartHeader != null && shouldTrackQueueTime(contentLength)) {
+            long queueTimeMs = calculateQueueTime(requestStartHeader, now);
+
+            if (queueTimeMs >= 0) {
+                metricsStore.push("qt", queueTimeMs, now);
+
+                // Expose queue time to the application via request attribute
+                httpRequest.setAttribute("judoscale.queue_time", queueTimeMs);
+
+                logger.debug("Request queue_time={}ms request_id={} size={}",
+                    queueTimeMs, requestId, contentLength);
+            }
+        }
+
+        // Measure application time
+        long startNanos = System.nanoTime();
+
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            long appTimeMs = (System.nanoTime() - startNanos) / 1_000_000;
+            metricsStore.push("at", appTimeMs, now);
+        }
+    }
+
+    /**
+     * Determines if we should track queue time based on request size.
+     * Large requests can skew queue time due to network transfer time.
+     */
+    private boolean shouldTrackQueueTime(int contentLength) {
+        if (!config.isIgnoreLargeRequests()) {
+            return true;
+        }
+        return contentLength < 0 || contentLength <= config.getMaxRequestSizeBytes();
+    }
+
+    /**
+     * Calculates the queue time in milliseconds from the X-Request-Start header.
+     * Handles multiple formats: seconds, milliseconds, microseconds, nanoseconds.
+     */
+    long calculateQueueTime(String requestStartHeader, Instant now) {
+        try {
+            // Strip any non-numeric characters (e.g., "t=" prefix from NGINX)
+            String cleanValue = requestStartHeader.replaceAll("[^0-9.]", "");
+            double value = Double.parseDouble(cleanValue);
+
+            // Convert to epoch milliseconds based on the magnitude
+            long startTimeMs;
+            if (value > NANOSECONDS_CUTOFF) {
+                // Nanoseconds (Render)
+                startTimeMs = (long) (value / 1_000_000);
+            } else if (value > MICROSECONDS_CUTOFF) {
+                // Microseconds
+                startTimeMs = (long) (value / 1_000);
+            } else if (value > MILLISECONDS_CUTOFF) {
+                // Milliseconds (Heroku)
+                startTimeMs = (long) value;
+            } else {
+                // Seconds (NGINX with fractional seconds)
+                startTimeMs = (long) (value * 1000);
+            }
+
+            long queueTimeMs = now.toEpochMilli() - startTimeMs;
+
+            // Safeguard against negative queue times
+            return Math.max(0, queueTimeMs);
+
+        } catch (NumberFormatException e) {
+            logger.warn("Could not parse X-Request-Start header: {}", requestStartHeader);
+            return -1;
+        }
+    }
+}

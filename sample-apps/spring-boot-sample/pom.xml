@@ -5,39 +5,35 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.0.2</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>3.2.2</version>
+		<relativePath/>
 	</parent>
-	<groupId>com.example</groupId>
+	<groupId>com.judoscale</groupId>
 	<artifactId>spring-boot-sample</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-boot-sample</name>
-	<description>Demo project for Spring Boot</description>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
-	<developers>
-		<developer/>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
+	<description>Sample app for testing judoscale-spring-boot-starter</description>
+
 	<properties>
 		<java.version>21</java.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webmvc</artifactId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<!-- Judoscale Spring Boot Starter -->
+		<dependency>
+			<groupId>com.judoscale</groupId>
+			<artifactId>judoscale-spring-boot-starter</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webmvc-test</artifactId>
+			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
