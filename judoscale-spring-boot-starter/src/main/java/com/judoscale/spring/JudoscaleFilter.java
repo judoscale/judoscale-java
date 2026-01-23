@@ -1,6 +1,7 @@
 package com.judoscale.spring;
 
 import com.judoscale.core.MetricsStore;
+import com.judoscale.core.UtilizationTracker;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,6 +17,7 @@ import java.time.Instant;
 /**
  * Servlet filter that measures request queue time and application time.
  * Queue time is calculated from the X-Request-Start header set by the load balancer.
+ * Also tracks request utilization via UtilizationTracker.
  */
 public class JudoscaleFilter implements Filter {
 
@@ -28,10 +30,12 @@ public class JudoscaleFilter implements Filter {
 
     private final MetricsStore metricsStore;
     private final JudoscaleConfig config;
+    private final UtilizationTracker utilizationTracker;
 
-    public JudoscaleFilter(MetricsStore metricsStore, JudoscaleConfig config) {
+    public JudoscaleFilter(MetricsStore metricsStore, JudoscaleConfig config, UtilizationTracker utilizationTracker) {
         this.metricsStore = metricsStore;
         this.config = config;
+        this.utilizationTracker = utilizationTracker;
     }
 
     @Override
@@ -63,6 +67,10 @@ public class JudoscaleFilter implements Filter {
             }
         }
 
+        // Start utilization tracking on first request (lazy initialization)
+        utilizationTracker.start();
+        utilizationTracker.incr();
+
         // Measure application time
         long startNanos = System.nanoTime();
 
@@ -71,6 +79,7 @@ public class JudoscaleFilter implements Filter {
         } finally {
             long appTimeMs = (System.nanoTime() - startNanos) / 1_000_000;
             metricsStore.push("at", appTimeMs, now);
+            utilizationTracker.decr();
         }
     }
 

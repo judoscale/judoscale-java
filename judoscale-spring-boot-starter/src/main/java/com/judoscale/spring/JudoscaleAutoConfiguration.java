@@ -1,6 +1,7 @@
 package com.judoscale.spring;
 
 import com.judoscale.core.MetricsStore;
+import com.judoscale.core.UtilizationTracker;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,11 @@ public class JudoscaleAutoConfiguration {
     }
 
     @Bean
+    public UtilizationTracker judoscaleUtilizationTracker() {
+        return new UtilizationTracker();
+    }
+
+    @Bean
     public JudoscaleApiClient judoscaleApiClient(JudoscaleConfig config) {
         return new JudoscaleApiClient(config);
     }
@@ -41,17 +47,19 @@ public class JudoscaleAutoConfiguration {
     public JudoscaleReporter judoscaleReporter(
             MetricsStore metricsStore,
             JudoscaleApiClient apiClient,
-            JudoscaleConfig config) {
-        return new JudoscaleReporter(metricsStore, apiClient, config);
+            JudoscaleConfig config,
+            UtilizationTracker utilizationTracker) {
+        return new JudoscaleReporter(metricsStore, apiClient, config, utilizationTracker);
     }
 
     @Bean
     public FilterRegistrationBean<JudoscaleFilter> judoscaleFilter(
             MetricsStore metricsStore,
-            JudoscaleConfig config) {
+            JudoscaleConfig config,
+            UtilizationTracker utilizationTracker) {
 
         FilterRegistrationBean<JudoscaleFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new JudoscaleFilter(metricsStore, config));
+        registration.setFilter(new JudoscaleFilter(metricsStore, config, utilizationTracker));
         registration.addUrlPatterns("/*");
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
         registration.setName("judoscaleFilter");

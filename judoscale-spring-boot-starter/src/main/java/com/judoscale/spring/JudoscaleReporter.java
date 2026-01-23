@@ -3,10 +3,12 @@ package com.judoscale.spring;
 import com.judoscale.core.ApiClient;
 import com.judoscale.core.Metric;
 import com.judoscale.core.MetricsStore;
+import com.judoscale.core.UtilizationTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,12 +23,15 @@ public class JudoscaleReporter {
     private final MetricsStore metricsStore;
     private final ApiClient apiClient;
     private final JudoscaleConfig config;
+    private final UtilizationTracker utilizationTracker;
     private final AtomicBoolean started = new AtomicBoolean(false);
 
-    public JudoscaleReporter(MetricsStore metricsStore, ApiClient apiClient, JudoscaleConfig config) {
+    public JudoscaleReporter(MetricsStore metricsStore, ApiClient apiClient, JudoscaleConfig config, 
+                             UtilizationTracker utilizationTracker) {
         this.metricsStore = metricsStore;
         this.apiClient = apiClient;
         this.config = config;
+        this.utilizationTracker = utilizationTracker;
     }
 
     /**
@@ -54,6 +59,13 @@ public class JudoscaleReporter {
         }
 
         try {
+            // Collect utilization metric if tracker has been started
+            if (utilizationTracker.isStarted()) {
+                int utilizationPct = utilizationTracker.utilizationPct();
+                metricsStore.push("up", utilizationPct, Instant.now());
+                logger.debug("Collected utilization: {}%", utilizationPct);
+            }
+
             List<Metric> metrics = metricsStore.flush();
 
             if (metrics.isEmpty()) {

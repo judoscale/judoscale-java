@@ -2,6 +2,7 @@ package com.judoscale.spring;
 
 import com.judoscale.core.ApiClient;
 import com.judoscale.core.MetricsStore;
+import com.judoscale.core.UtilizationTracker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.*;
 class JudoscaleReporterTest {
 
     private MetricsStore metricsStore;
+    private UtilizationTracker utilizationTracker;
 
     @Mock
     private ApiClient apiClient;
@@ -28,9 +30,10 @@ class JudoscaleReporterTest {
     @BeforeEach
     void setUp() {
         metricsStore = new MetricsStore();
+        utilizationTracker = new UtilizationTracker();
         config = new JudoscaleConfig();
         config.setApiBaseUrl("http://example.com/api/test-token");
-        reporter = new JudoscaleReporter(metricsStore, apiClient, config);
+        reporter = new JudoscaleReporter(metricsStore, apiClient, config, utilizationTracker);
     }
 
     @Test
@@ -154,5 +157,48 @@ class JudoscaleReporterTest {
         reporter.reportMetrics();
 
         verify(apiClient, never()).reportMetrics(any());
+    }
+
+    @Test
+    void reportMetricsCollectsUtilizationWhenTrackerIsStarted() {
+        reporter.start();
+        utilizationTracker.start();
+
+        reporter.reportMetrics();
+
+        // Should have sent the utilization metric
+        verify(apiClient).reportMetrics(argThat(metrics ->
+            metrics.size() == 1 &&
+            metrics.get(0).identifier().equals("up")
+        ));
+    }
+
+    @Test
+    void reportMetricsDoesNotCollectUtilizationWhenTrackerIsNotStarted() {
+        reporter.start();
+        // Don't start utilizationTracker
+
+        reporter.reportMetrics();
+
+        // No metrics should be sent (tracker not started, no other metrics)
+        verify(apiClient, never()).reportMetrics(any());
+    }
+
+    @Test
+    void reportMetricsIncludesUtilizationWithOtherMetrics() {
+        reporter.start();
+        utilizationTracker.start();
+        metricsStore.push("qt", 100, Instant.now());
+        metricsStore.push("at", 50, Instant.now());
+
+        reporter.reportMetrics();
+
+        // Should have utilization + queue time + app time
+        verify(apiClient).reportMetrics(argThat(metrics ->
+            metrics.size() == 3 &&
+            metrics.stream().anyMatch(m -> m.identifier().equals("up")) &&
+            metrics.stream().anyMatch(m -> m.identifier().equals("qt")) &&
+            metrics.stream().anyMatch(m -> m.identifier().equals("at"))
+        ));
     }
 }

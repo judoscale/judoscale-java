@@ -4,7 +4,7 @@ import java.time.Instant;
 
 /**
  * Represents a single metric measurement.
- * Metrics: qt = queue time, at = application time, nt = network time
+ * Metrics: qt = queue time, at = application time, nt = network time, up = utilization percentage
  */
 public record Metric(
     String identifier,

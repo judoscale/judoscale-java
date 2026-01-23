@@ -2,6 +2,7 @@ package com.judoscale.spring;
 
 import com.judoscale.core.Metric;
 import com.judoscale.core.MetricsStore;
+import com.judoscale.core.UtilizationTracker;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,7 @@ class JudoscaleFilterTest {
 
     private MetricsStore metricsStore;
     private JudoscaleConfig config;
+    private UtilizationTracker utilizationTracker;
     private JudoscaleFilter filter;
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
@@ -36,7 +38,8 @@ class JudoscaleFilterTest {
         metricsStore = new MetricsStore();
         config = new JudoscaleConfig();
         config.setApiBaseUrl("http://example.com/api/test-token");
-        filter = new JudoscaleFilter(metricsStore, config);
+        utilizationTracker = new UtilizationTracker();
+        filter = new JudoscaleFilter(metricsStore, config, utilizationTracker);
 
         request = new MockHttpServletRequest();
         request.setMethod("POST");
@@ -206,5 +209,36 @@ class JudoscaleFilterTest {
         List<Metric> metrics = metricsStore.flush();
         assertThat(metrics).hasSize(1);
         assertThat(metrics.get(0).identifier()).isEqualTo("at");
+    }
+
+    @Test
+    void startsUtilizationTrackerOnFirstRequest() throws Exception {
+        assertThat(utilizationTracker.isStarted()).isFalse();
+
+        filter.doFilter(request, response, filterChain);
+
+        assertThat(utilizationTracker.isStarted()).isTrue();
+    }
+
+    @Test
+    void incrementsAndDecrementsUtilizationCounter() throws Exception {
+        filter.doFilter(request, response, filterChain);
+
+        // After request completes, counter should be back to 0
+        assertThat(utilizationTracker.getActiveRequestCount()).isEqualTo(0);
+    }
+
+    @Test
+    void decrementsUtilizationCounterEvenOnException() throws Exception {
+        doThrow(new ServletException("boom")).when(filterChain).doFilter(any(), any());
+
+        try {
+            filter.doFilter(request, response, filterChain);
+        } catch (ServletException ignored) {
+            // Expected
+        }
+
+        // Counter should still be decremented
+        assertThat(utilizationTracker.getActiveRequestCount()).isEqualTo(0);
     }
 }
