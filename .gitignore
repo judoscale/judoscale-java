@@ -1,6 +1,7 @@
-# Gradle build output
+# Build output
 build/
 .gradle/
+target/
 
 # IDE files
 .idea/

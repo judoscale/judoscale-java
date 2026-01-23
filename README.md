@@ -93,11 +93,12 @@ public String example(HttpServletRequest request) {
 
 ### Project Structure
 
-This is a multi-module Maven project:
+This is a multi-module Gradle project:
 
 ```
 judoscale-java/
-├── pom.xml                           # Parent POM
+├── build.gradle.kts                  # Root build file
+├── settings.gradle.kts               # Module configuration
 ├── judoscale-core/                   # Shared core library
 │   └── src/main/java/com/judoscale/core/
 │       ├── ApiClient.java            # API client interface
@@ -121,7 +122,7 @@ judoscale-java/
 ### Prerequisites
 
 - Java 21 (we use [asdf](https://asdf-vm.com/) with the java plugin)
-- Maven 3.6+
+- Gradle 8.5+ (included via wrapper)
 
 ### Build
 
@@ -129,22 +130,27 @@ From the project root:
 
 ```sh
 # Build all modules
-mvn clean install
+./gradlew build
 
 # Build without running tests
-mvn clean install -DskipTests
+./gradlew build -x test
+
+# Clean and build
+./gradlew clean build
 ```
 
 ### Testing
 
 ```sh
 # Run all tests
-mvn test
+./gradlew test
 
 # Run tests for a specific module
-mvn test -pl judoscale-core
-mvn test -pl judoscale-spring-boot-starter
+./gradlew :judoscale-core:test
+./gradlew :judoscale-spring-boot-starter:test
 ```
+
+> **Note:** Gradle caches test results. If no code has changed, tests will show as "up-to-date" and won't re-run. To force tests to run, use `./gradlew clean test`.
 
 ### Sample Application
 

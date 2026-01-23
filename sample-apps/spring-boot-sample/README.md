@@ -35,7 +35,7 @@ Run `./bin/dev` to run the app in development mode. This will...
 If you just want to run the app directly (without queue time simulation):
 
 ```sh
-./mvnw spring-boot:run
+../../gradlew bootRun
 ```
 
 Then access http://localhost:8080 directly.
