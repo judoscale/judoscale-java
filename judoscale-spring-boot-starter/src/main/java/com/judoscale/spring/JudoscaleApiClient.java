@@ -1,5 +1,9 @@
 package com.judoscale.spring;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +14,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 
 /**
  * HTTP client for sending metrics to the Judoscale API.
@@ -18,6 +21,7 @@ import java.util.Map;
 public class JudoscaleApiClient implements ApiClient {
 
     private static final Logger logger = LoggerFactory.getLogger(JudoscaleApiClient.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final int MAX_RETRIES = 3;
 
     private final JudoscaleConfig config;
@@ -91,32 +95,33 @@ public class JudoscaleApiClient implements ApiClient {
      * Builds the JSON payload for the metrics report.
      */
     String buildReportJson(List<Metric> metrics) {
-        StringBuilder metricsJson = new StringBuilder("[");
+        ObjectNode root = objectMapper.createObjectNode();
 
-        for (int i = 0; i < metrics.size(); i++) {
-            Metric m = metrics.get(i);
-            if (i > 0) metricsJson.append(",");
-
-            // Format: [timestamp, value, identifier, queueName?]
-            metricsJson.append("[")
-                .append(m.time().getEpochSecond())
-                .append(",")
-                .append(m.value())
-                .append(",\"")
-                .append(m.identifier())
-                .append("\"");
-
+        // Build metrics array: each metric is [timestamp, value, identifier, queueName?]
+        ArrayNode metricsArray = objectMapper.createArrayNode();
+        for (Metric m : metrics) {
+            ArrayNode metricArray = objectMapper.createArrayNode();
+            metricArray.add(m.time().getEpochSecond());
+            metricArray.add(m.value());
+            metricArray.add(m.identifier());
             if (m.queueName() != null) {
-                metricsJson.append(",\"").append(m.queueName()).append("\"");
+                metricArray.add(m.queueName());
             }
-
-            metricsJson.append("]");
+            metricsArray.add(metricArray);
         }
+        root.set("metrics", metricsArray);
 
-        metricsJson.append("]");
+        // Build adapters object
+        ObjectNode adapters = objectMapper.createObjectNode();
+        ObjectNode springBootAdapter = objectMapper.createObjectNode();
+        springBootAdapter.put("adapter_version", "0.1.0");
+        adapters.set("judoscale-spring-boot", springBootAdapter);
+        root.set("adapters", adapters);
 
-        return """
-            {"metrics":%s,"adapters":{"judoscale-spring-boot":{"adapter_version":"0.1.0"}}}
-            """.formatted(metricsJson.toString()).trim();
+        try {
+            return objectMapper.writeValueAsString(root);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize metrics to JSON", e);
+        }
     }
 }
