@@ -26,9 +26,18 @@ Run `./bin/dev` to run the app in development mode. This will...
 
 2. Run the app with `./bin/dev`
 
-3. Access http://localhost:7980 (the proxy port) and continue to reload it to collect and report more request metrics.
+3. Access http://localhost:7980 (the proxy port). The sample app displays:
+   - The Judoscale API endpoint being used
+   - Instructions on how metrics are collected
+   - A form to test request duration
 
-4. Watch the request catcher page - you should see POST requests to `/api/v3/reports` every 10 seconds with the collected metrics.
+4. Use the **Test Request Duration** form to simulate slow requests:
+   - Enter a sleep duration (e.g., `1.5` seconds)
+   - Click "Execute Request" to send a request that takes that long
+   - Or use the quick links to test common durations (0.5s, 1s, 2s, 5s)
+   - You can also add `?sleep=N` directly to the URL (e.g., `http://localhost:7980/?sleep=2`)
+
+5. Watch the request catcher page - you should see POST requests to `/api/v3/reports` every 10 seconds with the collected metrics.
 
 ## Run without proxy
 

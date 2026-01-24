@@ -16,9 +16,13 @@ java {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
     // Judoscale Spring Boot Starter
     implementation(project(":judoscale-spring-boot-starter"))
+
+    // Development tools (auto-restart on file changes)
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
