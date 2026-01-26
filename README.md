@@ -67,6 +67,12 @@ judoscale.enabled=true
 
 The API URL is configured via the `JUDOSCALE_URL` environment variable. You can find your unique API URL in your Judoscale dashboard.
 
+To enable debug logging for the Judoscale starter, use the `LOGGING_LEVEL_COM_JUDOSCALE` environment variable:
+
+```env
+LOGGING_LEVEL_COM_JUDOSCALE=DEBUG
+```
+
 #### Accessing Queue Time
 
 Judoscale captures queue time for each request. You can access this metric for your own logging or analysis via a request attribute:
