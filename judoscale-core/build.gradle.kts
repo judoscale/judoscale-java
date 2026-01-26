@@ -1,3 +1,9 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
+plugins {
+    alias(libs.plugins.maven.publish)
+}
+
 description = "Core library for Judoscale Java integrations"
 
 dependencies {
@@ -6,66 +12,38 @@ dependencies {
     testImplementation(libs.assertj.core)
 }
 
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
+    signAllPublications()
 
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
+    coordinates(group.toString(), "judoscale-core", version.toString())
 
-            pom {
-                name.set("Judoscale Core")
-                description.set(project.description)
-                url.set("https://github.com/judoscale/judoscale-java")
+    pom {
+        name.set("Judoscale Core")
+        description.set(project.description)
+        inceptionYear.set("2024")
+        url.set("https://github.com/judoscale/judoscale-java")
 
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
-
-                developers {
-                    developer {
-                        id.set("judoscale")
-                        name.set("Judoscale")
-                        email.set("support@judoscale.com")
-                    }
-                }
-
-                scm {
-                    connection.set("scm:git:git://github.com/judoscale/judoscale-java.git")
-                    developerConnection.set("scm:git:ssh://github.com/judoscale/judoscale-java.git")
-                    url.set("https://github.com/judoscale/judoscale-java")
-                }
+        licenses {
+            license {
+                name.set("MIT License")
+                url.set("https://opensource.org/licenses/MIT")
+                distribution.set("https://opensource.org/licenses/MIT")
             }
         }
-    }
 
-    repositories {
-        maven {
-            name = "MavenCentral"
-            url = if (version.toString().endsWith("-SNAPSHOT")) {
-                uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            } else {
-                uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            }
-            credentials {
-                username = System.getenv("MAVEN_USERNAME") ?: project.findProperty("maven.username") as String?
-                password = System.getenv("MAVEN_PASSWORD") ?: project.findProperty("maven.password") as String?
+        developers {
+            developer {
+                id.set("judoscale")
+                name.set("Judoscale")
+                email.set("support@judoscale.com")
             }
         }
-    }
-}
 
-signing {
-    val signingKey = System.getenv("GPG_SIGNING_KEY")
-    val signingPassword = System.getenv("GPG_SIGNING_PASSWORD")
-    if (signingKey != null && signingPassword != null) {
-        useInMemoryPgpKeys(signingKey, signingPassword)
+        scm {
+            connection.set("scm:git:git://github.com/judoscale/judoscale-java.git")
+            developerConnection.set("scm:git:ssh://github.com/judoscale/judoscale-java.git")
+            url.set("https://github.com/judoscale/judoscale-java")
+        }
     }
-    sign(publishing.publications["mavenJava"])
 }

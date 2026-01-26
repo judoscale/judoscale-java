@@ -28,3 +28,4 @@ mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.
 byte-buddy = { module = "net.bytebuddy:byte-buddy", version.ref = "byte-buddy" }
 
 [plugins]
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.30.0" }

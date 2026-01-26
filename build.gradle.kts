@@ -2,8 +2,7 @@ plugins {
     java
     `java-library`
     jacoco
-    `maven-publish`
-    signing
+    alias(libs.plugins.maven.publish) apply false
 }
 
 val versionFile = file("version.txt")
@@ -23,8 +22,6 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "java-library")
     apply(plugin = "jacoco")
-    apply(plugin = "maven-publish")
-    apply(plugin = "signing")
 
     group = "com.judoscale"
     version = projectVersion
