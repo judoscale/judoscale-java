@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.maven.publish)
 }
 
-description = "Autoscaling for Spring Boot applications on Heroku and Render"
+description = "Autoscaling for Spring Boot applications on Heroku, AWS, and other cloud hosts"
 
 dependencies {
     // Judoscale Core

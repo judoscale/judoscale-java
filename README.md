@@ -37,7 +37,7 @@ implementation 'com.judoscale:judoscale-spring-boot-starter:0.1.2'
 
 ### Getting Started
 
-1. **Sign up** at [judoscale.com](https://judoscale.com) and connect your cloud provider (Heroku, Render, AWS, etc.)
+1. **Sign up** at [judoscale.com](https://judoscale.com) and connect your cloud provider (Heroku, AWS, or other supported platforms)
 2. **Install the library** using the instructions above
 3. **Set the `JUDOSCALE_URL` environment variable** — You'll find your unique API URL in your Judoscale dashboard
 
