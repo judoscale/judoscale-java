@@ -179,6 +179,27 @@ class JudoscaleFilterTest {
     }
 
     @Test
+    void handlesLargeNanosecondTimestampsWithoutPrecisionLoss() throws Exception {
+        // Use a specific large nanosecond timestamp that would lose precision with double
+        // This timestamp represents a time 5 seconds ago in nanoseconds
+        Instant now = Instant.now();
+        long fiveSecondsAgoNanos = (now.toEpochMilli() - 5000) * 1_000_000L;
+
+        // Verify the timestamp is large enough to potentially lose precision with double
+        assertThat(fiveSecondsAgoNanos).isGreaterThan(1_000_000_000_000_000_000L);
+
+        request.addHeader("X-Request-Start", String.valueOf(fiveSecondsAgoNanos));
+
+        filter.doFilter(request, response, filterChain);
+
+        List<Metric> metrics = metricsStore.flush();
+        assertThat(metrics).hasSize(2);
+        assertThat(metrics.get(0).identifier()).isEqualTo("qt");
+        // Should be close to 5000ms, allowing for test execution time
+        assertThat(metrics.get(0).value()).isBetween(4900L, 5200L);
+    }
+
+    @Test
     void safeguardsAgainstNegativeQueueTimes() throws Exception {
         // Future timestamp (shouldn't happen, but let's be safe)
         long futureTime = Instant.now().toEpochMilli() + 5000;

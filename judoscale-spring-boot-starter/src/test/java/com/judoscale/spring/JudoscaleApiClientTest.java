@@ -36,6 +36,8 @@ class JudoscaleApiClientTest {
         assertThat(json).contains("[1705314600,50,\"at\"]");
         assertThat(json).contains("\"adapters\":");
         assertThat(json).contains("\"judoscale-spring-boot\"");
+        // Version should be included (loaded from META-INF/judoscale.properties or "unknown")
+        assertThat(json).contains("\"adapter_version\":");
     }
 
     @Test

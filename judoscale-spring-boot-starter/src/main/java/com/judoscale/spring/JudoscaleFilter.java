@@ -102,22 +102,27 @@ public class JudoscaleFilter implements Filter {
         try {
             // Strip any non-numeric characters (e.g., "t=" prefix from NGINX)
             String cleanValue = requestStartHeader.replaceAll("[^0-9.]", "");
-            double value = Double.parseDouble(cleanValue);
 
-            // Convert to epoch milliseconds based on the magnitude
             long startTimeMs;
-            if (value > NANOSECONDS_CUTOFF) {
-                // Nanoseconds (Render)
-                startTimeMs = (long) (value / 1_000_000);
-            } else if (value > MICROSECONDS_CUTOFF) {
-                // Microseconds
-                startTimeMs = (long) (value / 1_000);
-            } else if (value > MILLISECONDS_CUTOFF) {
-                // Milliseconds (Heroku)
-                startTimeMs = (long) value;
+
+            // Use long parsing for integer values to avoid precision loss with large timestamps
+            // (nanosecond timestamps can exceed double's precision)
+            if (!cleanValue.contains(".")) {
+                long value = Long.parseLong(cleanValue);
+                startTimeMs = convertToMillis(value);
             } else {
-                // Seconds (NGINX with fractional seconds)
-                startTimeMs = (long) (value * 1000);
+                // Fractional values (typically seconds from NGINX)
+                double value = Double.parseDouble(cleanValue);
+                if (value > NANOSECONDS_CUTOFF) {
+                    startTimeMs = (long) (value / 1_000_000);
+                } else if (value > MICROSECONDS_CUTOFF) {
+                    startTimeMs = (long) (value / 1_000);
+                } else if (value > MILLISECONDS_CUTOFF) {
+                    startTimeMs = (long) value;
+                } else {
+                    // Seconds with fractional part
+                    startTimeMs = (long) (value * 1000);
+                }
             }
 
             long queueTimeMs = now.toEpochMilli() - startTimeMs;
@@ -128,6 +133,25 @@ public class JudoscaleFilter implements Filter {
         } catch (NumberFormatException e) {
             logger.warn("Could not parse X-Request-Start header: {}", requestStartHeader);
             return -1;
+        }
+    }
+
+    /**
+     * Converts an integer timestamp to milliseconds based on its magnitude.
+     */
+    private long convertToMillis(long value) {
+        if (value > NANOSECONDS_CUTOFF) {
+            // Nanoseconds (Render)
+            return value / 1_000_000;
+        } else if (value > MICROSECONDS_CUTOFF) {
+            // Microseconds
+            return value / 1_000;
+        } else if (value > MILLISECONDS_CUTOFF) {
+            // Milliseconds (Heroku)
+            return value;
+        } else {
+            // Seconds (integer seconds, rare but possible)
+            return value * 1000;
         }
     }
 }

@@ -60,9 +60,15 @@ public class UtilizationTracker {
 
     /**
      * Decrements the active request counter. Call when a request ends.
+     * Guards against going negative (which would indicate a bug in calling code).
      */
     public void decr() {
         synchronized (lock) {
+            if (activeRequestCounter <= 0) {
+                // Guard against going negative - this would indicate mismatched incr/decr calls
+                return;
+            }
+
             activeRequestCounter--;
 
             if (activeRequestCounter == 0) {

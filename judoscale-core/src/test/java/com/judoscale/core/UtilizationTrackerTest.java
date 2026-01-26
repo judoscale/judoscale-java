@@ -170,6 +170,35 @@ class UtilizationTrackerTest {
     }
 
     @Test
+    void decrDoesNotGoNegative() {
+        tracker.start();
+        assertThat(tracker.getActiveRequestCount()).isEqualTo(0);
+
+        // Decrement without any prior increment - should stay at 0
+        tracker.decr();
+        assertThat(tracker.getActiveRequestCount()).isEqualTo(0);
+
+        // Multiple decrements should still stay at 0
+        tracker.decr();
+        tracker.decr();
+        assertThat(tracker.getActiveRequestCount()).isEqualTo(0);
+    }
+
+    @Test
+    void decrAfterMismatchedCallsStaysAtZero() {
+        tracker.start();
+
+        // One increment
+        tracker.incr();
+        assertThat(tracker.getActiveRequestCount()).isEqualTo(1);
+
+        // Two decrements - second one should be ignored
+        tracker.decr();
+        tracker.decr();
+        assertThat(tracker.getActiveRequestCount()).isEqualTo(0);
+    }
+
+    @Test
     void isThreadSafe() throws InterruptedException {
         int threadCount = 10;
         int operationsPerThread = 1000;

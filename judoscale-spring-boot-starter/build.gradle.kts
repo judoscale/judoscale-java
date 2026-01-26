@@ -6,6 +6,25 @@ plugins {
 
 description = "Autoscaling for Spring Boot applications on Heroku, AWS, and other cloud hosts"
 
+// Generate version properties file during build
+tasks.register("generateVersionProperties") {
+    val outputDir = layout.buildDirectory.dir("generated/resources")
+    val versionValue = version.toString()
+
+    outputs.dir(outputDir)
+
+    doLast {
+        val propsDir = outputDir.get().asFile.resolve("META-INF")
+        propsDir.mkdirs()
+        propsDir.resolve("judoscale.properties").writeText("version=$versionValue\n")
+    }
+}
+
+tasks.named<ProcessResources>("processResources") {
+    dependsOn("generateVersionProperties")
+    from(layout.buildDirectory.dir("generated/resources"))
+}
+
 dependencies {
     // Judoscale Core
     api(project(":judoscale-core"))

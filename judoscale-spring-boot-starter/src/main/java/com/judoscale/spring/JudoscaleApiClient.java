@@ -10,12 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * HTTP client for sending metrics to the Judoscale API.
@@ -25,6 +27,7 @@ public class JudoscaleApiClient implements ApiClient {
     private static final Logger logger = LoggerFactory.getLogger(JudoscaleApiClient.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final int MAX_RETRIES = 3;
+    private static final String ADAPTER_VERSION = loadAdapterVersion();
 
     private final JudoscaleConfig config;
     private final HttpClient httpClient;
@@ -40,6 +43,23 @@ public class JudoscaleApiClient implements ApiClient {
     JudoscaleApiClient(JudoscaleConfig config, HttpClient httpClient) {
         this.config = config;
         this.httpClient = httpClient;
+    }
+
+    /**
+     * Loads the adapter version from the META-INF/judoscale.properties file.
+     * Falls back to "unknown" if the file cannot be read.
+     */
+    private static String loadAdapterVersion() {
+        try (InputStream is = JudoscaleApiClient.class.getResourceAsStream("/META-INF/judoscale.properties")) {
+            if (is != null) {
+                Properties props = new Properties();
+                props.load(is);
+                return props.getProperty("version", "unknown");
+            }
+        } catch (IOException e) {
+            logger.debug("Could not load judoscale.properties: {}", e.getMessage());
+        }
+        return "unknown";
     }
 
     @Override
@@ -75,6 +95,10 @@ public class JudoscaleApiClient implements ApiClient {
                 }
 
             } catch (IOException | InterruptedException e) {
+                // Restore interrupt status if this was an interrupt
+                if (e instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
                 if (attempt < MAX_RETRIES) {
                     logger.debug("Retry {} after error: {}", attempt, e.getMessage());
                     try {
@@ -116,7 +140,7 @@ public class JudoscaleApiClient implements ApiClient {
         // Build adapters object
         ObjectNode adapters = objectMapper.createObjectNode();
         ObjectNode springBootAdapter = objectMapper.createObjectNode();
-        springBootAdapter.put("adapter_version", "0.1.0");
+        springBootAdapter.put("adapter_version", ADAPTER_VERSION);
         adapters.set("judoscale-spring-boot", springBootAdapter);
         root.set("adapters", adapters);
 
