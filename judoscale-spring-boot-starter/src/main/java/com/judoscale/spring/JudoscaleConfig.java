@@ -5,6 +5,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * Configuration properties for Judoscale.
  * Can be set via application.properties/yml or environment variables.
+ * 
+ * <p>The API URL can be configured in several ways (in order of precedence):
+ * <ol>
+ *   <li>{@code judoscale.api-base-url} property</li>
+ *   <li>{@code judoscale.url} property</li>
+ *   <li>{@code JUDOSCALE_URL} environment variable (via Spring's relaxed binding)</li>
+ * </ol>
  */
 @ConfigurationProperties(prefix = "judoscale")
 public class JudoscaleConfig {
@@ -14,6 +21,11 @@ public class JudoscaleConfig {
      * Typically set via JUDOSCALE_URL environment variable.
      */
     private String apiBaseUrl;
+
+    /**
+     * Alternative property for the API URL (maps to JUDOSCALE_URL env var via relaxed binding).
+     */
+    private String url;
 
     /**
      * How often to report metrics, in seconds. Default is 10.
@@ -42,19 +54,23 @@ public class JudoscaleConfig {
     private boolean enabled = true;
 
     public String getApiBaseUrl() {
-        // Fall back to JUDOSCALE_URL environment variable if not explicitly configured.
-        // This is the standard env var set by the Judoscale Heroku add-on.
-        if (apiBaseUrl == null || apiBaseUrl.isBlank()) {
-            String envUrl = System.getenv("JUDOSCALE_URL");
-            if (envUrl != null && !envUrl.isBlank()) {
-                return envUrl;
-            }
+        // Prefer explicit apiBaseUrl, fall back to url (which binds to JUDOSCALE_URL)
+        if (apiBaseUrl != null && !apiBaseUrl.isBlank()) {
+            return apiBaseUrl;
         }
-        return apiBaseUrl;
+        return url;
     }
 
     public void setApiBaseUrl(String apiBaseUrl) {
         this.apiBaseUrl = apiBaseUrl;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public int getReportIntervalSeconds() {
@@ -101,7 +117,7 @@ public class JudoscaleConfig {
      * Returns true if the API URL is configured and not blank.
      */
     public boolean isConfigured() {
-        String url = getApiBaseUrl();
-        return url != null && !url.isBlank();
+        String configuredUrl = getApiBaseUrl();
+        return configuredUrl != null && !configuredUrl.isBlank();
     }
 }

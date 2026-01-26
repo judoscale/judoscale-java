@@ -5,41 +5,33 @@ plugins {
 
 description = "Autoscaling for Spring Boot applications on Heroku and Render"
 
-val springBootVersion = "3.2.2"
-val jacksonVersion = "2.16.1"
-val slf4jVersion = "2.0.11"
-val junitVersion = "5.10.1"
-val assertjVersion = "3.24.2"
-val mockitoVersion = "5.8.0"
-val byteBuddyVersion = "1.14.11"
-
 dependencies {
     // Judoscale Core
     api(project(":judoscale-core"))
 
     // Spring Boot Web (provided - the app will have this)
-    compileOnly("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
-    testImplementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
+    compileOnly(libs.spring.boot.starter.web)
+    testImplementation(libs.spring.boot.starter.web)
 
     // Spring Boot Auto-configuration
-    implementation("org.springframework.boot:spring-boot-autoconfigure:$springBootVersion")
+    implementation(libs.spring.boot.autoconfigure)
 
     // For @ConfigurationProperties
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:$springBootVersion")
+    annotationProcessor(libs.spring.boot.configuration.processor)
 
     // JSON processing (for API client)
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation(libs.jackson.databind)
 
     // Logging
-    implementation("org.slf4j:slf4j-api:$slf4jVersion")
+    implementation(libs.slf4j.api)
 
     // Testing
-    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
-    testImplementation("org.assertj:assertj-core:$assertjVersion")
-    testImplementation("org.mockito:mockito-core:$mockitoVersion")
-    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
-    testImplementation("net.bytebuddy:byte-buddy:$byteBuddyVersion")
+    testImplementation(libs.spring.boot.starter.test)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.junit.jupiter)
+    testImplementation(libs.byte.buddy)
 }
 
 java {

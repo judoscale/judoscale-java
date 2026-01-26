@@ -1,19 +1,11 @@
 plugins {
     java
     `java-library`
+    jacoco
 }
 
 group = "com.judoscale"
 version = "0.1.0-SNAPSHOT"
-
-// Dependency versions
-val springBootVersion = "3.2.2"
-val jacksonVersion = "2.16.1"
-val slf4jVersion = "2.0.11"
-val junitVersion = "5.10.1"
-val assertjVersion = "3.24.2"
-val mockitoVersion = "5.8.0"
-val byteBuddyVersion = "1.14.11"
 
 allprojects {
     repositories {
@@ -25,6 +17,7 @@ allprojects {
 subprojects {
     apply(plugin = "java")
     apply(plugin = "java-library")
+    apply(plugin = "jacoco")
 
     group = "com.judoscale"
     version = "0.1.0-SNAPSHOT"
@@ -40,5 +33,13 @@ subprojects {
 
     tasks.withType<Test> {
         useJUnitPlatform()
+        finalizedBy(tasks.named("jacocoTestReport"))
+    }
+
+    tasks.withType<JacocoReport> {
+        reports {
+            xml.required.set(true)
+            html.required.set(true)
+        }
     }
 }
