@@ -1,6 +1,9 @@
 # Judoscale for Java
 
-Official Java libraries for [Judoscale](https://judoscale.com), the advanced autoscaler for Heroku, AWS, and other cloud platorms.
+[![Maven Central](https://img.shields.io/maven-central/v/com.judoscale/judoscale-spring-boot-starter)](https://central.sonatype.com/artifact/com.judoscale/judoscale-spring-boot-starter)
+[![CI](https://github.com/judoscale/judoscale-java/actions/workflows/ci.yml/badge.svg)](https://github.com/judoscale/judoscale-java/actions/workflows/ci.yml)
+
+Official Java libraries for [Judoscale](https://judoscale.com), the advanced autoscaler for Heroku, AWS, and other cloud platforms.
 
 Judoscale automatically scales your application based on request queue time and background job queue depth, keeping your users happy and your hosting costs low.
 

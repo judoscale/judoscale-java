@@ -2,10 +2,15 @@ plugins {
     java
     `java-library`
     jacoco
+    `maven-publish`
+    signing
 }
 
+val versionFile = file("version.txt")
+val projectVersion = if (versionFile.exists()) versionFile.readText().trim() else "0.1.0"
+
 group = "com.judoscale"
-version = "0.1.0-SNAPSHOT"
+version = projectVersion
 
 allprojects {
     repositories {
@@ -18,9 +23,11 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "java-library")
     apply(plugin = "jacoco")
+    apply(plugin = "maven-publish")
+    apply(plugin = "signing")
 
     group = "com.judoscale"
-    version = "0.1.0-SNAPSHOT"
+    version = projectVersion
 
     java {
         sourceCompatibility = JavaVersion.VERSION_21
