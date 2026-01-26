@@ -42,6 +42,14 @@ public class JudoscaleConfig {
     private boolean enabled = true;
 
     public String getApiBaseUrl() {
+        // Fall back to JUDOSCALE_URL environment variable if not explicitly configured.
+        // This is the standard env var set by the Judoscale Heroku add-on.
+        if (apiBaseUrl == null || apiBaseUrl.isBlank()) {
+            String envUrl = System.getenv("JUDOSCALE_URL");
+            if (envUrl != null && !envUrl.isBlank()) {
+                return envUrl;
+            }
+        }
         return apiBaseUrl;
     }
 
@@ -93,6 +101,7 @@ public class JudoscaleConfig {
      * Returns true if the API URL is configured and not blank.
      */
     public boolean isConfigured() {
-        return apiBaseUrl != null && !apiBaseUrl.isBlank();
+        String url = getApiBaseUrl();
+        return url != null && !url.isBlank();
     }
 }
