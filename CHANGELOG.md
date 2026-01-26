@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1](https://github.com/judoscale/judoscale-java/compare/judoscale-java-v0.1.0...judoscale-java-v0.1.1) (2026-01-26)
+
+
+### Features
+
+* initial release ([c010c90](https://github.com/judoscale/judoscale-java/commit/c010c9050d12a5a3209886630325b49f87f0ba9f))
+
 ## [Unreleased]
 
 ### Added
