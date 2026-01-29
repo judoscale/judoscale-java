@@ -44,7 +44,7 @@ public class JudoscaleAutoConfiguration {
         return new UtilizationTracker();
     }
 
-    @Bean
+    @Bean(destroyMethod = "close")
     @ConditionalOnMissingBean(JudoscaleApiClient.class)
     public JudoscaleApiClient judoscaleApiClient(JudoscaleConfig config) {
         return new JudoscaleApiClient(config);

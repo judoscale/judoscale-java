@@ -17,6 +17,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -26,7 +27,7 @@ import java.util.Properties;
  * HTTP client for sending metrics to the Judoscale API.
  * Uses Apache HttpClient for Java 8 compatibility.
  */
-public class JudoscaleApiClient implements ApiClient {
+public class JudoscaleApiClient implements ApiClient, Closeable {
 
     private static final Logger logger = LoggerFactory.getLogger(JudoscaleApiClient.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -156,6 +157,18 @@ public class JudoscaleApiClient implements ApiClient {
             return objectMapper.writeValueAsString(root);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to serialize metrics to JSON", e);
+        }
+    }
+
+    /**
+     * Closes the underlying HTTP client and releases any system resources associated with it.
+     * This includes connection pools and background threads maintained by Apache HttpClient.
+     */
+    @Override
+    public void close() throws IOException {
+        if (httpClient != null) {
+            httpClient.close();
+            logger.debug("HTTP client closed");
         }
     }
 }
