@@ -6,6 +6,12 @@ plugins {
 
 description = "Core library for Judoscale Java integrations"
 
+// judoscale-core targets Java 8 for maximum compatibility
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 dependencies {
     // Testing
     testImplementation(libs.junit.jupiter)

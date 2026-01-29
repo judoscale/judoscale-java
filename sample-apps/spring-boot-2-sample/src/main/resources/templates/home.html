@@ -1,0 +1,93 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Judoscale: Spring Boot 2 Sample</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Judoscale <small>Spring Boot 2 Sample</small></h1>
+
+      <p>
+        Judoscale is reporting web request metrics to
+        <a
+          th:href="${apiBaseUrl}"
+          th:text="${apiBaseUrl}"
+          target="_blank"
+          rel="noreferrer"
+          >API URL</a
+        >.
+      </p>
+      <p>
+        Reload this page to generate metrics, and watch them appear in the
+        request catcher.
+      </p>
+
+      <article th:if="${sleepSeconds != null}">
+        Slept for <strong th:text="${sleepSeconds}">0</strong> second(s). Total
+        request duration: <strong th:text="${requestDuration}">0</strong>ms
+      </article>
+
+      <article>
+        <header>Test Request Duration</header>
+        <p>Simulate slow requests to see how Judoscale tracks request times.</p>
+        <form method="get" action="/">
+          <fieldset role="group">
+            <input
+              type="number"
+              id="sleep"
+              name="sleep"
+              min="0"
+              max="30"
+              step="0.1"
+              th:value="${sleepSeconds}"
+              placeholder="Seconds (e.g. 1.5)"
+            />
+            <button type="submit">Execute</button>
+          </fieldset>
+        </form>
+        <p>
+          <small>Quick links:</small>
+          <a href="/?sleep=0.5" role="button" class="outline secondary">0.5s</a>
+          <a href="/?sleep=1" role="button" class="outline secondary">1s</a>
+          <a href="/?sleep=2" role="button" class="outline secondary">2s</a>
+          <a href="/?sleep=5" role="button" class="outline secondary">5s</a>
+        </p>
+      </article>
+
+      <h2>How It Works</h2>
+      <ol>
+        <li>
+          Each request to this page is tracked by <strong>Judoscale</strong>.
+        </li>
+        <li>Metrics like queue time and request duration are collected.</li>
+        <li>Metrics are reported to the API endpoint every 10 seconds.</li>
+        <li>
+          Use the <code>?sleep=N</code> parameter to simulate slow requests.
+        </li>
+      </ol>
+
+      <blockquote>
+        <strong>Tip:</strong> Open the
+        <a th:href="${apiBaseUrl}" target="_blank" rel="noreferrer"
+          >API endpoint</a
+        >
+        in another tab to watch metrics as they're reported in real-time.
+      </blockquote>
+
+      <footer>
+        <small>
+          Judoscale Spring Boot 2 Sample ·
+          <a href="https://judoscale.com" target="_blank" rel="noreferrer"
+            >judoscale.com</a
+          >
+        </small>
+      </footer>
+    </main>
+  </body>
+</html>
