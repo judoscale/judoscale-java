@@ -26,6 +26,7 @@ subprojects {
     group = "com.judoscale"
     version = projectVersion
 
+    // Default to Java 21, but allow subprojects to override
     java {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21

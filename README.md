@@ -9,9 +9,12 @@ Judoscale automatically scales your application based on request queue time and 
 
 **Supported Frameworks**
 
-- **Spring Boot** — `judoscale-spring-boot-starter`
+- **Spring Boot 3.x** — `judoscale-spring-boot-starter`
+- **Spring Boot 2.x** — `judoscale-spring-boot-2-starter`
 
 ## judoscale-spring-boot-starter
+
+For Spring Boot 3.x applications.
 
 ### Requirements
 
@@ -38,6 +41,37 @@ Add the dependency to your `build.gradle`:
 
 ```groovy
 implementation 'com.judoscale:judoscale-spring-boot-starter:0.1.2'
+```
+
+## judoscale-spring-boot-2-starter
+
+For Spring Boot 2.x applications (legacy support).
+
+### Requirements
+
+- Java 8 or later
+- Spring Boot 2.6 or later (2.x series)
+
+### Installation
+
+#### Maven
+
+Add the dependency to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>com.judoscale</groupId>
+    <artifactId>judoscale-spring-boot-2-starter</artifactId>
+    <version>0.1.2</version>
+</dependency>
+```
+
+#### Gradle
+
+Add the dependency to your `build.gradle`:
+
+```groovy
+implementation 'com.judoscale:judoscale-spring-boot-2-starter:0.1.2'
 ```
 
 ### Usage

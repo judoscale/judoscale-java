@@ -1,18 +1,29 @@
 [versions]
 spring-boot = "3.2.2"
+spring-boot2 = "2.6.7"
 jackson = "2.16.1"
 slf4j = "2.0.11"
 junit = "5.10.1"
 assertj = "3.24.2"
 mockito = "5.8.0"
 byte-buddy = "1.14.11"
+httpclient = "4.5.14"
 
 [libraries]
-# Spring Boot
+# Spring Boot 3.x
 spring-boot-autoconfigure = { module = "org.springframework.boot:spring-boot-autoconfigure", version.ref = "spring-boot" }
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "spring-boot" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot" }
 spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot" }
+
+# Spring Boot 2.x
+spring-boot2-autoconfigure = { module = "org.springframework.boot:spring-boot-autoconfigure", version.ref = "spring-boot2" }
+spring-boot2-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "spring-boot2" }
+spring-boot2-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot2" }
+spring-boot2-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot2" }
+
+# HTTP Client (for Java 8 compatibility)
+httpclient = { module = "org.apache.httpcomponents:httpclient", version.ref = "httpclient" }
 
 # Jackson
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }

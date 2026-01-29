@@ -1,0 +1,51 @@
+{
+  "properties": [
+    {
+      "name": "judoscale.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether Judoscale metrics collection is enabled.",
+      "defaultValue": true
+    },
+    {
+      "name": "judoscale.api-base-url",
+      "type": "java.lang.String",
+      "description": "The Judoscale API URL. Typically set via the JUDOSCALE_URL environment variable."
+    },
+    {
+      "name": "judoscale.report-interval-seconds",
+      "type": "java.lang.Integer",
+      "description": "How often to report metrics to Judoscale, in seconds.",
+      "defaultValue": 10
+    },
+    {
+      "name": "judoscale.max-request-size-bytes",
+      "type": "java.lang.Integer",
+      "description": "Maximum request body size in bytes before ignoring queue time. Large requests can skew measurements.",
+      "defaultValue": 100000
+    },
+    {
+      "name": "judoscale.ignore-large-requests",
+      "type": "java.lang.Boolean",
+      "description": "Whether to ignore queue time measurements for requests larger than max-request-size-bytes.",
+      "defaultValue": true
+    },
+    {
+      "name": "judoscale.log-level",
+      "type": "java.lang.String",
+      "description": "Log level for Judoscale logging.",
+      "defaultValue": "INFO"
+    }
+  ],
+  "hints": [
+    {
+      "name": "judoscale.log-level",
+      "values": [
+        { "value": "TRACE" },
+        { "value": "DEBUG" },
+        { "value": "INFO" },
+        { "value": "WARN" },
+        { "value": "ERROR" }
+      ]
+    }
+  ]
+}
