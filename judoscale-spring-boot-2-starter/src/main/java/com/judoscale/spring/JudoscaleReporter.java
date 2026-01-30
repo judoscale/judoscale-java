@@ -38,7 +38,7 @@ public class JudoscaleReporter {
      */
     public void start() {
         if (!config.isConfigured()) {
-            logger.debug("Set judoscale.api-base-url to enable metrics reporting");
+            logger.info("Set judoscale.api-base-url (JUDOSCALE_URL) to enable metrics reporting");
             return;
         }
 

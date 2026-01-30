@@ -26,7 +26,7 @@ public class JudoscaleReporter {
     private final UtilizationTracker utilizationTracker;
     private final AtomicBoolean started = new AtomicBoolean(false);
 
-    public JudoscaleReporter(MetricsStore metricsStore, ApiClient apiClient, JudoscaleConfig config, 
+    public JudoscaleReporter(MetricsStore metricsStore, ApiClient apiClient, JudoscaleConfig config,
                              UtilizationTracker utilizationTracker) {
         this.metricsStore = metricsStore;
         this.apiClient = apiClient;
@@ -39,7 +39,7 @@ public class JudoscaleReporter {
      */
     public void start() {
         if (!config.isConfigured()) {
-            logger.debug("Set judoscale.api-base-url to enable metrics reporting");
+            logger.info("Set judoscale.api-base-url (JUDOSCALE_URL) to enable metrics reporting");
             return;
         }
 
