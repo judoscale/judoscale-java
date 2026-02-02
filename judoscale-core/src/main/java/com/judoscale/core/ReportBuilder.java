@@ -32,6 +32,10 @@ public final class ReportBuilder {
     public static String buildReportJson(List<Metric> metrics, Collection<Adapter> adapters) {
         ObjectNode root = objectMapper.createObjectNode();
 
+        // Include runtime container identifier and process ID
+        root.put("container", runtimeContainer != null ? runtimeContainer : "");
+        root.put("pid", ProcessHandle.current().pid());
+
         // Build metrics array: each metric is [timestamp, value, identifier, queueName?]
         ArrayNode metricsArray = objectMapper.createArrayNode();
         for (Metric m : metrics) {

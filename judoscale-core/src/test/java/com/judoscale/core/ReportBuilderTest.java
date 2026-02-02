@@ -23,6 +23,8 @@ class ReportBuilderTest {
 
         String json = ReportBuilder.buildReportJson(metrics, Collections.singletonList(TEST_ADAPTER));
 
+        assertThat(json).contains("\"container\":\"web.1\"");
+        assertThat(json).containsPattern("\"pid\":\\d+");
         assertThat(json).contains("\"metrics\":");
         assertThat(json).contains("[1705314600,100,\"qt\"]");
         assertThat(json).contains("[1705314600,50,\"at\"]");
@@ -48,6 +50,7 @@ class ReportBuilderTest {
         String json = ReportBuilder.buildReportJson(Collections.emptyList(), Collections.singletonList(TEST_ADAPTER));
 
         assertThat(json).contains("\"metrics\":[]");
+        assertThat(json).contains("\"container\":\"web.1\"");
     }
 
     @Test

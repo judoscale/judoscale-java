@@ -10,6 +10,12 @@ package com.judoscale.core;
 public class ConfigBase {
 
     /**
+     * The current runtime container identifier.
+     * Detected from environment variables at initialization.
+     */
+    private final String runtimeContainer;
+
+    /**
      * The base URL for the Judoscale API.
      * Typically set via JUDOSCALE_URL environment variable.
      */
@@ -45,6 +51,75 @@ public class ConfigBase {
      * Whether Judoscale is enabled. Default is true.
      */
     private boolean enabled = true;
+
+    /**
+     * Creates a new ConfigBase, detecting the runtime container from environment variables.
+     */
+    public ConfigBase() {
+        this.runtimeContainer = detectRuntimeContainer();
+    }
+
+    /**
+     * Detects the runtime container from various platform-specific environment variables.
+     * Checks in order: JUDOSCALE_CONTAINER, DYNO (Heroku), RENDER_INSTANCE_ID (Render),
+     * ECS_CONTAINER_METADATA_URI (AWS ECS), FLY_MACHINE_ID (Fly.io), RAILWAY_REPLICA_ID (Railway).
+     * 
+     * @return the detected container identifier, or empty string if not detected
+     */
+    private String detectRuntimeContainer() {
+        String container = System.getenv("JUDOSCALE_CONTAINER");
+        if (container != null && !container.isEmpty()) {
+            return container;
+        }
+
+        // Heroku
+        String dyno = System.getenv("DYNO");
+        if (dyno != null && !dyno.isEmpty()) {
+            return dyno;
+        }
+
+        // Render
+        String renderInstanceId = System.getenv("RENDER_INSTANCE_ID");
+        if (renderInstanceId != null && !renderInstanceId.isEmpty()) {
+            String renderServiceId = System.getenv("RENDER_SERVICE_ID");
+            if (renderServiceId != null && renderInstanceId.startsWith(renderServiceId + "-")) {
+                return renderInstanceId.substring(renderServiceId.length() + 1);
+            }
+            return renderInstanceId;
+        }
+
+        // AWS ECS
+        String ecsMetadataUri = System.getenv("ECS_CONTAINER_METADATA_URI");
+        if (ecsMetadataUri != null && !ecsMetadataUri.isEmpty()) {
+            int lastSlash = ecsMetadataUri.lastIndexOf('/');
+            if (lastSlash >= 0 && lastSlash < ecsMetadataUri.length() - 1) {
+                return ecsMetadataUri.substring(lastSlash + 1);
+            }
+        }
+
+        // Fly.io
+        String flyMachineId = System.getenv("FLY_MACHINE_ID");
+        if (flyMachineId != null && !flyMachineId.isEmpty()) {
+            return flyMachineId;
+        }
+
+        // Railway
+        String railwayReplicaId = System.getenv("RAILWAY_REPLICA_ID");
+        if (railwayReplicaId != null && !railwayReplicaId.isEmpty()) {
+            return railwayReplicaId;
+        }
+
+        return "";
+    }
+
+    /**
+     * Returns the current runtime container identifier.
+     * 
+     * @return the runtime container, or empty string if not detected
+     */
+    public String getRuntimeContainer() {
+        return runtimeContainer;
+    }
 
     /**
      * Returns the API base URL, preferring explicit apiBaseUrl over url.

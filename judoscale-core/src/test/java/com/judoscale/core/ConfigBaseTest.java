@@ -83,4 +83,11 @@ class ConfigBaseTest {
         assertThat(config.getLogLevel()).isEqualTo("DEBUG");
         assertThat(config.isEnabled()).isFalse();
     }
+
+    @Test
+    void runtimeContainerIsNeverNull() {
+        // Runtime container is detected from environment variables.
+        // In test environment without those vars set, it should return empty string, not null.
+        assertThat(config.getRuntimeContainer()).isNotNull();
+    }
 }
