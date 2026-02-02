@@ -13,6 +13,9 @@ java {
 }
 
 dependencies {
+    // JSON processing
+    implementation(libs.jackson.databind)
+
     // Testing
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.assertj.core)

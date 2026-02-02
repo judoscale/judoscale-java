@@ -2,10 +2,7 @@ package com.judoscale.spring;
 
 import com.judoscale.core.ApiClient;
 import com.judoscale.core.Metric;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.judoscale.core.ReportBuilder;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -19,9 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * HTTP client for sending metrics to the Judoscale API.
@@ -30,9 +25,8 @@ import java.util.Properties;
 public class JudoscaleApiClient implements ApiClient, Closeable {
 
     private static final Logger logger = LoggerFactory.getLogger(JudoscaleApiClient.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final int MAX_RETRIES = 3;
-    private static final String ADAPTER_VERSION = loadAdapterVersion();
+    private static final String ADAPTER_VERSION = ReportBuilder.loadAdapterVersion(JudoscaleApiClient.class);
 
     private final JudoscaleConfig config;
     private final CloseableHttpClient httpClient;
@@ -57,23 +51,6 @@ public class JudoscaleApiClient implements ApiClient, Closeable {
         this.httpClient = httpClient;
     }
 
-    /**
-     * Loads the adapter version from the META-INF/judoscale.properties file.
-     * Falls back to "unknown" if the file cannot be read.
-     */
-    private static String loadAdapterVersion() {
-        try (InputStream is = JudoscaleApiClient.class.getResourceAsStream("/META-INF/judoscale.properties")) {
-            if (is != null) {
-                Properties props = new Properties();
-                props.load(is);
-                return props.getProperty("version", "unknown");
-            }
-        } catch (IOException e) {
-            logger.debug("Could not load judoscale.properties: {}", e.getMessage());
-        }
-        return "unknown";
-    }
-
     @Override
     public boolean reportMetrics(List<Metric> metrics) {
         if (!config.isConfigured()) {
@@ -81,7 +58,7 @@ public class JudoscaleApiClient implements ApiClient, Closeable {
             return false;
         }
 
-        String json = buildReportJson(metrics);
+        String json = ReportBuilder.buildReportJson(metrics, ADAPTER_VERSION);
         String url = config.getApiBaseUrl() + "/v3/reports";
 
         for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
@@ -124,40 +101,6 @@ public class JudoscaleApiClient implements ApiClient, Closeable {
         }
 
         return false;
-    }
-
-    /**
-     * Builds the JSON payload for the metrics report.
-     */
-    String buildReportJson(List<Metric> metrics) {
-        ObjectNode root = objectMapper.createObjectNode();
-
-        // Build metrics array: each metric is [timestamp, value, identifier, queueName?]
-        ArrayNode metricsArray = objectMapper.createArrayNode();
-        for (Metric m : metrics) {
-            ArrayNode metricArray = objectMapper.createArrayNode();
-            metricArray.add(m.time().getEpochSecond());
-            metricArray.add(m.value());
-            metricArray.add(m.identifier());
-            if (m.queueName() != null) {
-                metricArray.add(m.queueName());
-            }
-            metricsArray.add(metricArray);
-        }
-        root.set("metrics", metricsArray);
-
-        // Build adapters object
-        ObjectNode adapters = objectMapper.createObjectNode();
-        ObjectNode springBootAdapter = objectMapper.createObjectNode();
-        springBootAdapter.put("adapter_version", ADAPTER_VERSION);
-        adapters.set("judoscale-spring-boot", springBootAdapter);
-        root.set("adapters", adapters);
-
-        try {
-            return objectMapper.writeValueAsString(root);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to serialize metrics to JSON", e);
-        }
     }
 
     /**
