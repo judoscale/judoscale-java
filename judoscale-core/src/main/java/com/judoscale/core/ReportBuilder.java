@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
@@ -25,10 +26,10 @@ public final class ReportBuilder {
      * Builds the JSON payload for the metrics report.
      * 
      * @param metrics the metrics to include in the report
-     * @param adapterVersion the version of the adapter
+     * @param adapters the adapters to include in the report (supports multiple adapters)
      * @return the JSON string
      */
-    public static String buildReportJson(List<Metric> metrics, String adapterVersion) {
+    public static String buildReportJson(List<Metric> metrics, Collection<Adapter> adapters) {
         ObjectNode root = objectMapper.createObjectNode();
 
         // Build metrics array: each metric is [timestamp, value, identifier, queueName?]
@@ -45,12 +46,14 @@ public final class ReportBuilder {
         }
         root.set("metrics", metricsArray);
 
-        // Build adapters object
-        ObjectNode adapters = objectMapper.createObjectNode();
-        ObjectNode springBootAdapter = objectMapper.createObjectNode();
-        springBootAdapter.put("adapter_version", adapterVersion);
-        adapters.set("judoscale-spring-boot", springBootAdapter);
-        root.set("adapters", adapters);
+        // Build adapters object - each adapter provides its own name and version
+        ObjectNode adaptersNode = objectMapper.createObjectNode();
+        for (Adapter adapter : adapters) {
+            ObjectNode adapterNode = objectMapper.createObjectNode();
+            adapterNode.put("adapter_version", adapter.version());
+            adaptersNode.set(adapter.name(), adapterNode);
+        }
+        root.set("adapters", adaptersNode);
 
         try {
             return objectMapper.writeValueAsString(root);

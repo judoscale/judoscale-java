@@ -11,6 +11,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ReportBuilderTest {
 
+    private static final Adapter TEST_ADAPTER = new Adapter("judoscale-test", "1.0.0");
+
     @Test
     void buildReportJsonFormatsMetricsCorrectly() {
         Instant time = Instant.parse("2024-01-15T10:30:00Z");
@@ -19,13 +21,13 @@ class ReportBuilderTest {
             new Metric("at", 50, time)
         );
 
-        String json = ReportBuilder.buildReportJson(metrics, "1.0.0");
+        String json = ReportBuilder.buildReportJson(metrics, Collections.singletonList(TEST_ADAPTER));
 
         assertThat(json).contains("\"metrics\":");
         assertThat(json).contains("[1705314600,100,\"qt\"]");
         assertThat(json).contains("[1705314600,50,\"at\"]");
         assertThat(json).contains("\"adapters\":");
-        assertThat(json).contains("\"judoscale-spring-boot\"");
+        assertThat(json).contains("\"judoscale-test\"");
         assertThat(json).contains("\"adapter_version\":\"1.0.0\"");
     }
 
@@ -36,14 +38,14 @@ class ReportBuilderTest {
             new Metric("qd", 5, time, "default")
         );
 
-        String json = ReportBuilder.buildReportJson(metrics, "1.0.0");
+        String json = ReportBuilder.buildReportJson(metrics, Collections.singletonList(TEST_ADAPTER));
 
         assertThat(json).contains("[1705314600,5,\"qd\",\"default\"]");
     }
 
     @Test
     void buildReportJsonHandlesEmptyMetricsList() {
-        String json = ReportBuilder.buildReportJson(Collections.emptyList(), "1.0.0");
+        String json = ReportBuilder.buildReportJson(Collections.emptyList(), Collections.singletonList(TEST_ADAPTER));
 
         assertThat(json).contains("\"metrics\":[]");
     }
@@ -55,9 +57,30 @@ class ReportBuilderTest {
             new Metric("qd", 5, time, "queue\"with\\special")
         );
 
-        String json = ReportBuilder.buildReportJson(metrics, "1.0.0");
+        String json = ReportBuilder.buildReportJson(metrics, Collections.singletonList(TEST_ADAPTER));
 
         assertThat(json).contains("\"queue\\\"with\\\\special\"");
+    }
+
+    @Test
+    void buildReportJsonSupportsMultipleAdapters() {
+        Adapter springBootAdapter = new Adapter("judoscale-spring-boot", "1.0.0");
+        Adapter sidekiqAdapter = new Adapter("judoscale-sidekiq", "2.0.0");
+        List<Adapter> adapters = Arrays.asList(springBootAdapter, sidekiqAdapter);
+
+        String json = ReportBuilder.buildReportJson(Collections.emptyList(), adapters);
+
+        assertThat(json).contains("\"judoscale-spring-boot\"");
+        assertThat(json).contains("\"judoscale-sidekiq\"");
+        assertThat(json).contains("\"adapter_version\":\"1.0.0\"");
+        assertThat(json).contains("\"adapter_version\":\"2.0.0\"");
+    }
+
+    @Test
+    void buildReportJsonHandlesEmptyAdaptersList() {
+        String json = ReportBuilder.buildReportJson(Collections.emptyList(), Collections.emptyList());
+
+        assertThat(json).contains("\"adapters\":{}");
     }
 
     @Test

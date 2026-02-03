@@ -1,5 +1,6 @@
 package com.judoscale.spring;
 
+import com.judoscale.core.Adapter;
 import com.judoscale.core.ApiClient;
 import com.judoscale.core.Metric;
 import com.judoscale.core.ReportBuilder;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,7 +28,10 @@ public class JudoscaleApiClient implements ApiClient, Closeable {
 
     private static final Logger logger = LoggerFactory.getLogger(JudoscaleApiClient.class);
     private static final int MAX_RETRIES = 3;
-    private static final String ADAPTER_VERSION = ReportBuilder.loadAdapterVersion(JudoscaleApiClient.class);
+    private static final Adapter ADAPTER = new Adapter(
+        "judoscale-spring-boot-2",
+        ReportBuilder.loadAdapterVersion(JudoscaleApiClient.class)
+    );
 
     private final JudoscaleConfig config;
     private final CloseableHttpClient httpClient;
@@ -58,7 +63,7 @@ public class JudoscaleApiClient implements ApiClient, Closeable {
             return false;
         }
 
-        String json = ReportBuilder.buildReportJson(metrics, ADAPTER_VERSION);
+        String json = ReportBuilder.buildReportJson(metrics, Collections.singletonList(ADAPTER));
         String url = config.getApiBaseUrl() + "/v3/reports";
 
         for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
