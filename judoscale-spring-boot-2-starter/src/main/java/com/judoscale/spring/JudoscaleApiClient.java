@@ -63,7 +63,7 @@ public class JudoscaleApiClient implements ApiClient, Closeable {
             return false;
         }
 
-        String json = ReportBuilder.buildReportJson(metrics, Collections.singletonList(ADAPTER));
+        String json = ReportBuilder.buildReportJson(metrics, Collections.singletonList(ADAPTER), config.getRuntimeContainer());
         String url = config.getApiBaseUrl() + "/v3/reports";
 
         for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {

@@ -21,7 +21,7 @@ class ReportBuilderTest {
             new Metric("at", 50, time)
         );
 
-        String json = ReportBuilder.buildReportJson(metrics, Collections.singletonList(TEST_ADAPTER));
+        String json = ReportBuilder.buildReportJson(metrics, Collections.singletonList(TEST_ADAPTER), "web.1");
 
         assertThat(json).contains("\"container\":\"web.1\"");
         assertThat(json).containsPattern("\"pid\":\\d+");
@@ -40,14 +40,14 @@ class ReportBuilderTest {
             new Metric("qd", 5, time, "default")
         );
 
-        String json = ReportBuilder.buildReportJson(metrics, Collections.singletonList(TEST_ADAPTER));
+        String json = ReportBuilder.buildReportJson(metrics, Collections.singletonList(TEST_ADAPTER), "web.1");
 
         assertThat(json).contains("[1705314600,5,\"qd\",\"default\"]");
     }
 
     @Test
     void buildReportJsonHandlesEmptyMetricsList() {
-        String json = ReportBuilder.buildReportJson(Collections.emptyList(), Collections.singletonList(TEST_ADAPTER));
+        String json = ReportBuilder.buildReportJson(Collections.emptyList(), Collections.singletonList(TEST_ADAPTER), "web.1");
 
         assertThat(json).contains("\"metrics\":[]");
         assertThat(json).contains("\"container\":\"web.1\"");
@@ -60,9 +60,23 @@ class ReportBuilderTest {
             new Metric("qd", 5, time, "queue\"with\\special")
         );
 
-        String json = ReportBuilder.buildReportJson(metrics, Collections.singletonList(TEST_ADAPTER));
+        String json = ReportBuilder.buildReportJson(metrics, Collections.singletonList(TEST_ADAPTER), "web.1");
 
         assertThat(json).contains("\"queue\\\"with\\\\special\"");
+    }
+
+    @Test
+    void buildReportJsonHandlesNullContainer() {
+        String json = ReportBuilder.buildReportJson(Collections.emptyList(), Collections.singletonList(TEST_ADAPTER), null);
+
+        assertThat(json).contains("\"container\":\"\"");
+    }
+
+    @Test
+    void buildReportJsonHandlesEmptyContainer() {
+        String json = ReportBuilder.buildReportJson(Collections.emptyList(), Collections.singletonList(TEST_ADAPTER), "");
+
+        assertThat(json).contains("\"container\":\"\"");
     }
 
     @Test
@@ -71,7 +85,7 @@ class ReportBuilderTest {
         Adapter sidekiqAdapter = new Adapter("judoscale-sidekiq", "2.0.0");
         List<Adapter> adapters = Arrays.asList(springBootAdapter, sidekiqAdapter);
 
-        String json = ReportBuilder.buildReportJson(Collections.emptyList(), adapters);
+        String json = ReportBuilder.buildReportJson(Collections.emptyList(), adapters, "web.1");
 
         assertThat(json).contains("\"judoscale-spring-boot\"");
         assertThat(json).contains("\"judoscale-sidekiq\"");
@@ -81,7 +95,7 @@ class ReportBuilderTest {
 
     @Test
     void buildReportJsonHandlesEmptyAdaptersList() {
-        String json = ReportBuilder.buildReportJson(Collections.emptyList(), Collections.emptyList());
+        String json = ReportBuilder.buildReportJson(Collections.emptyList(), Collections.emptyList(), "web.1");
 
         assertThat(json).contains("\"adapters\":{}");
     }
