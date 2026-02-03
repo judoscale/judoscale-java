@@ -2,7 +2,6 @@ package com.judoscale.spring;
 
 import com.judoscale.core.Adapter;
 import com.judoscale.core.ApiClient;
-import com.judoscale.core.Metric;
 import com.judoscale.core.ReportBuilder;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -17,27 +16,23 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * HTTP client for sending metrics to the Judoscale API.
  * Uses Apache HttpClient for Java 8 compatibility.
  */
-public class JudoscaleApiClient implements ApiClient, Closeable {
+public class JudoscaleApiClient extends ApiClient implements Closeable {
 
     private static final Logger logger = LoggerFactory.getLogger(JudoscaleApiClient.class);
-    private static final int MAX_RETRIES = 3;
     private static final Adapter ADAPTER = new Adapter(
         "judoscale-spring-boot-2",
         ReportBuilder.loadAdapterVersion(JudoscaleApiClient.class)
     );
 
-    private final JudoscaleConfig config;
     private final CloseableHttpClient httpClient;
 
     public JudoscaleApiClient(JudoscaleConfig config) {
-        this.config = config;
+        super(config, ADAPTER);
 
         RequestConfig requestConfig = RequestConfig.custom()
             .setConnectTimeout(5000)
@@ -52,60 +47,29 @@ public class JudoscaleApiClient implements ApiClient, Closeable {
 
     // Constructor for testing with mock HttpClient
     JudoscaleApiClient(JudoscaleConfig config, CloseableHttpClient httpClient) {
-        this.config = config;
+        super(config, ADAPTER);
         this.httpClient = httpClient;
     }
 
     @Override
-    public boolean reportMetrics(List<Metric> metrics) {
-        if (!config.isConfigured()) {
-            logger.debug("Judoscale API URL not configured, skipping report");
-            return false;
-        }
+    protected HttpResult sendRequest(String url, String json) {
+        try {
+            HttpPost request = new HttpPost(url);
+            request.setHeader("Content-Type", "application/json");
+            request.setEntity(new StringEntity(json, ContentType.APPLICATION_JSON));
 
-        String json = ReportBuilder.buildReportJson(metrics, Collections.singletonList(ADAPTER));
-        String url = config.getApiBaseUrl() + "/v3/reports";
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
+                int statusCode = response.getStatusLine().getStatusCode();
+                String responseBody = response.getEntity() != null
+                    ? EntityUtils.toString(response.getEntity())
+                    : "";
 
-        for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-            try {
-                HttpPost request = new HttpPost(url);
-                request.setHeader("Content-Type", "application/json");
-                request.setEntity(new StringEntity(json, ContentType.APPLICATION_JSON));
-
-                logger.debug("Posting {} bytes to {}", json.length(), url);
-
-                try (CloseableHttpResponse response = httpClient.execute(request)) {
-                    int statusCode = response.getStatusLine().getStatusCode();
-                    String responseBody = response.getEntity() != null
-                        ? EntityUtils.toString(response.getEntity())
-                        : "";
-
-                    if (statusCode >= 200 && statusCode < 300) {
-                        logger.debug("Reported successfully");
-                        return true;
-                    } else {
-                        logger.error("Reporter failed: {} - {}", statusCode, responseBody);
-                        return false;
-                    }
-                }
-
-            } catch (IOException e) {
-                if (attempt < MAX_RETRIES) {
-                    logger.debug("Retry {} after error: {}", attempt, e.getMessage());
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException ignored) {
-                        Thread.currentThread().interrupt();
-                        return false;
-                    }
-                } else {
-                    logger.error("Could not connect to {}: {}", url, e.getMessage());
-                    return false;
-                }
+                return HttpResult.success(statusCode, responseBody);
             }
-        }
 
-        return false;
+        } catch (IOException e) {
+            return HttpResult.error(e);
+        }
     }
 
     /**
