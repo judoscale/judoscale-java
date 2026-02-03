@@ -31,7 +31,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>com.judoscale</groupId>
     <artifactId>judoscale-spring-boot-starter</artifactId>
-    <version>0.1.3</version>
+    <version>0.1.4</version>
 </dependency>
 ```
 
@@ -40,7 +40,7 @@ Add the dependency to your `pom.xml`:
 Add the dependency to your `build.gradle`:
 
 ```groovy
-implementation 'com.judoscale:judoscale-spring-boot-starter:0.1.3'
+implementation 'com.judoscale:judoscale-spring-boot-starter:0.1.4'
 ```
 
 ## judoscale-spring-boot-2-starter
@@ -62,7 +62,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>com.judoscale</groupId>
     <artifactId>judoscale-spring-boot-2-starter</artifactId>
-    <version>0.1.3</version>
+    <version>0.1.4</version>
 </dependency>
 ```
 
@@ -71,7 +71,7 @@ Add the dependency to your `pom.xml`:
 Add the dependency to your `build.gradle`:
 
 ```groovy
-implementation 'com.judoscale:judoscale-spring-boot-2-starter:0.1.3'
+implementation 'com.judoscale:judoscale-spring-boot-2-starter:0.1.4'
 ```
 
 ### Usage
