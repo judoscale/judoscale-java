@@ -1,6 +1,6 @@
 package com.judoscale.spring;
 
-import com.judoscale.core.ApiClient;
+import com.judoscale.core.ApiClientBase;
 import com.judoscale.core.MetricsStore;
 import com.judoscale.core.UtilizationTracker;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +22,7 @@ class JudoscaleReporterTest {
     private UtilizationTracker utilizationTracker;
 
     @Mock
-    private ApiClient apiClient;
+    private ApiClientBase apiClient;
 
     private JudoscaleConfig config;
     private JudoscaleReporter reporter;
@@ -126,7 +126,7 @@ class JudoscaleReporterTest {
     }
 
     @Test
-    void reportMetricsContinuesEvenWhenApiClientThrowsException() {
+    void reportMetricsContinuesEvenWhenApiClientBaseThrowsException() {
         reporter.start();
         metricsStore.push("qt", 100, Instant.now());
         doThrow(new RuntimeException("boom")).when(apiClient).reportMetrics(any());

@@ -1,7 +1,7 @@
 package com.judoscale.spring;
 
 import com.judoscale.core.Adapter;
-import com.judoscale.core.ApiClient;
+import com.judoscale.core.ApiClientBase;
 import com.judoscale.core.ReportBuilder;
 
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.time.Duration;
  * HTTP client for sending metrics to the Judoscale API.
  * Uses Java 21's native HttpClient.
  */
-public class JudoscaleApiClient extends ApiClient {
+public class JudoscaleApiClient extends ApiClientBase {
 
     private static final Adapter ADAPTER = new Adapter(
         "judoscale-spring-boot",

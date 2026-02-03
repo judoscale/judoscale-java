@@ -11,16 +11,16 @@ import java.util.List;
  * Handles the common request flow, retry logic, and error handling.
  * Subclasses provide the HTTP implementation layer.
  */
-public abstract class ApiClient {
+public abstract class ApiClientBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(ApiClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApiClientBase.class);
     private static final int MAX_RETRIES = 3;
     private static final long RETRY_DELAY_MS = 10;
 
     private final ConfigBase config;
     private final Adapter adapter;
 
-    protected ApiClient(ConfigBase config, Adapter adapter) {
+    protected ApiClientBase(ConfigBase config, Adapter adapter) {
         this.config = config;
         this.adapter = adapter;
     }

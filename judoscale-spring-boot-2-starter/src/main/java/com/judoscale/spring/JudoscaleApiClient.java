@@ -1,7 +1,7 @@
 package com.judoscale.spring;
 
 import com.judoscale.core.Adapter;
-import com.judoscale.core.ApiClient;
+import com.judoscale.core.ApiClientBase;
 import com.judoscale.core.ReportBuilder;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -21,7 +21,7 @@ import java.io.IOException;
  * HTTP client for sending metrics to the Judoscale API.
  * Uses Apache HttpClient for Java 8 compatibility.
  */
-public class JudoscaleApiClient extends ApiClient implements Closeable {
+public class JudoscaleApiClient extends ApiClientBase implements Closeable {
 
     private static final Logger logger = LoggerFactory.getLogger(JudoscaleApiClient.class);
     private static final Adapter ADAPTER = new Adapter(

@@ -18,12 +18,12 @@ public class Reporter {
     private static final Logger logger = Logger.getLogger(Reporter.class.getName());
 
     private final MetricsStore metricsStore;
-    private final ApiClient apiClient;
+    private final ApiClientBase apiClient;
     private final ConfigBase config;
     private final UtilizationTracker utilizationTracker;
     private final AtomicBoolean started = new AtomicBoolean(false);
 
-    public Reporter(MetricsStore metricsStore, ApiClient apiClient, ConfigBase config,
+    public Reporter(MetricsStore metricsStore, ApiClientBase apiClient, ConfigBase config,
                     UtilizationTracker utilizationTracker) {
         this.metricsStore = metricsStore;
         this.apiClient = apiClient;

@@ -10,7 +10,7 @@ judoscale-java/
 ├── settings.gradle.kts               # Module configuration
 ├── judoscale-core/                   # Shared core library
 │   └── src/main/java/com/judoscale/core/
-│       ├── ApiClient.java            # API client interface
+│       ├── ApiClientBase.java        # API client interface
 │       ├── Metric.java               # Metric data record
 │       └── MetricsStore.java         # Thread-safe metric storage
 ├── judoscale-spring-boot-starter/    # Spring Boot integration

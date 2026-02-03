@@ -145,7 +145,7 @@ class ReporterTest {
 
     // Test implementations
 
-    private static class TestApiClient extends ApiClient {
+    private static class TestApiClient extends ApiClientBase {
         int reportedMetricsCount = 0;
 
         TestApiClient() {
