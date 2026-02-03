@@ -12,6 +12,11 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+// Use --release to enforce API compatibility at compile time
+tasks.withType<JavaCompile> {
+    options.release.set(8)
+}
+
 dependencies {
     // JSON processing
     implementation(libs.jackson.databind)
