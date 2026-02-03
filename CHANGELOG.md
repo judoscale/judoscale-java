@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4](https://github.com/judoscale/judoscale-java/compare/judoscale-java-v0.1.3...judoscale-java-v0.1.4) (2026-02-03)
+
+
+### Bug Fixes
+
+* Extract common functionality into core & fix adapter metadata in reports ([#6](https://github.com/judoscale/judoscale-java/issues/6)) ([24a11db](https://github.com/judoscale/judoscale-java/commit/24a11dbcd7c3bca502ecc7f0477eb2c4d61ce5d0))
+* Include container and pid metadata in reports ([#7](https://github.com/judoscale/judoscale-java/issues/7)) ([58c5224](https://github.com/judoscale/judoscale-java/commit/58c5224da63c167b5289db1d24117eec688a8eaf))
+
 ## [0.1.3](https://github.com/judoscale/judoscale-java/compare/judoscale-java-v0.1.2...judoscale-java-v0.1.3) (2026-01-29)
 
 
