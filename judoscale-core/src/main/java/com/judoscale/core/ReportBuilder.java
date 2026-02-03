@@ -24,7 +24,7 @@ public final class ReportBuilder {
 
     /**
      * Builds the JSON payload for the metrics report.
-     * 
+     *
      * @param metrics the metrics to include in the report
      * @param adapters the adapters to include in the report (supports multiple adapters)
      * @return the JSON string
@@ -65,7 +65,7 @@ public final class ReportBuilder {
     /**
      * Loads the adapter version from the META-INF/judoscale.properties file.
      * Falls back to "unknown" if the file cannot be read.
-     * 
+     *
      * @param loaderClass the class to use for loading the resource
      * @return the adapter version
      */
