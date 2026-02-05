@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ReportBuilderTest {
 
-    private static final Adapter TEST_ADAPTER = new Adapter("judoscale-test", "1.0.0");
+    private static final Adapter TEST_ADAPTER = new Adapter("judoscale-test", "1.0.0", "3.2.1");
 
     @Test
     void buildReportJsonFormatsMetricsCorrectly() {
@@ -31,6 +31,7 @@ class ReportBuilderTest {
         assertThat(json).contains("\"adapters\":");
         assertThat(json).contains("\"judoscale-test\"");
         assertThat(json).contains("\"adapter_version\":\"1.0.0\"");
+        assertThat(json).contains("\"runtime_version\":\"3.2.1\"");
     }
 
     @Test
@@ -81,8 +82,8 @@ class ReportBuilderTest {
 
     @Test
     void buildReportJsonSupportsMultipleAdapters() {
-        Adapter springBootAdapter = new Adapter("judoscale-spring-boot", "1.0.0");
-        Adapter sidekiqAdapter = new Adapter("judoscale-sidekiq", "2.0.0");
+        Adapter springBootAdapter = new Adapter("judoscale-spring-boot", "1.0.0", "3.2.2");
+        Adapter sidekiqAdapter = new Adapter("judoscale-sidekiq", "2.0.0", null);
         List<Adapter> adapters = Arrays.asList(springBootAdapter, sidekiqAdapter);
 
         String json = ReportBuilder.buildReportJson(Collections.emptyList(), adapters, "web.1");
@@ -91,6 +92,8 @@ class ReportBuilderTest {
         assertThat(json).contains("\"judoscale-sidekiq\"");
         assertThat(json).contains("\"adapter_version\":\"1.0.0\"");
         assertThat(json).contains("\"adapter_version\":\"2.0.0\"");
+        assertThat(json).contains("\"runtime_version\":\"3.2.2\"");
+        assertThat(json).contains("\"runtime_version\":null");
     }
 
     @Test
