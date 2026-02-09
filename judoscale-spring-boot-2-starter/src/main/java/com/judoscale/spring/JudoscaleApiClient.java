@@ -5,6 +5,7 @@ import com.judoscale.core.ApiClient;
 import com.judoscale.core.Metric;
 import com.judoscale.core.ReportBuilder;
 import org.apache.http.client.config.RequestConfig;
+import org.springframework.boot.SpringBootVersion;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -30,7 +31,8 @@ public class JudoscaleApiClient implements ApiClient, Closeable {
     private static final int MAX_RETRIES = 3;
     private static final Adapter ADAPTER = new Adapter(
         "judoscale-spring-boot-2",
-        ReportBuilder.loadAdapterVersion(JudoscaleApiClient.class)
+        ReportBuilder.loadAdapterVersion(JudoscaleApiClient.class),
+        SpringBootVersion.getVersion()
     );
 
     private final JudoscaleConfig config;

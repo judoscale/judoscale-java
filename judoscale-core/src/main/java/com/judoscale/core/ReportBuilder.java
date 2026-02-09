@@ -57,6 +57,7 @@ public final class ReportBuilder {
         for (Adapter adapter : adapters) {
             ObjectNode adapterNode = objectMapper.createObjectNode();
             adapterNode.put("adapter_version", adapter.version());
+            adapterNode.put("runtime_version", adapter.runtimeVersion());
             adaptersNode.set(adapter.name(), adapterNode);
         }
         root.set("adapters", adaptersNode);

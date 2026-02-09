@@ -6,6 +6,7 @@ import com.judoscale.core.Metric;
 import com.judoscale.core.ReportBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringBootVersion;
 
 import java.io.IOException;
 import java.net.URI;
@@ -24,7 +25,8 @@ public class JudoscaleApiClient implements ApiClient {
     private static final int MAX_RETRIES = 3;
     private static final Adapter ADAPTER = new Adapter(
         "judoscale-spring-boot",
-        ReportBuilder.loadAdapterVersion(JudoscaleApiClient.class)
+        ReportBuilder.loadAdapterVersion(JudoscaleApiClient.class),
+        SpringBootVersion.getVersion()
     );
 
     private final JudoscaleConfig config;
