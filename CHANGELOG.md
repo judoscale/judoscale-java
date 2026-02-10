@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5](https://github.com/judoscale/judoscale-java/compare/judoscale-java-v0.1.4...judoscale-java-v0.1.5) (2026-02-09)
+
+
+### Bug Fixes
+
+* Add `runtime_version` to report the integration/framework version ([#9](https://github.com/judoscale/judoscale-java/issues/9)) ([d21da7d](https://github.com/judoscale/judoscale-java/commit/d21da7dfa87eada0d267bac457139799da930254))
+
 ## [0.1.4](https://github.com/judoscale/judoscale-java/compare/judoscale-java-v0.1.3...judoscale-java-v0.1.4) (2026-02-03)
 
 
