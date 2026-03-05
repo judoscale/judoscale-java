@@ -1,6 +1,7 @@
 package com.judoscale.spring;
 
-import com.judoscale.core.ApiClient;
+import com.judoscale.core.ApiClientBase;
+import com.judoscale.core.Metric;
 import com.judoscale.core.MetricsStore;
 import com.judoscale.core.UtilizationTracker;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,7 @@ class JudoscaleReporterTest {
     private UtilizationTracker utilizationTracker;
 
     @Mock
-    private ApiClient apiClient;
+    private ApiClientBase apiClient;
 
     private JudoscaleConfig config;
     private JudoscaleReporter reporter;
@@ -99,7 +100,7 @@ class JudoscaleReporterTest {
 
         reporter.reportMetrics();
 
-        verify(apiClient).reportMetrics(argThat(metrics ->
+        verify(apiClient).reportMetrics(argThat((List<Metric> metrics) ->
             metrics.size() == 2 &&
             metrics.get(0).identifier().equals("qt") &&
             metrics.get(1).identifier().equals("at")
@@ -167,7 +168,7 @@ class JudoscaleReporterTest {
         reporter.reportMetrics();
 
         // Should have sent the utilization metric
-        verify(apiClient).reportMetrics(argThat(metrics ->
+        verify(apiClient).reportMetrics(argThat((List<Metric> metrics) ->
             metrics.size() == 1 &&
             metrics.get(0).identifier().equals("up")
         ));
@@ -194,7 +195,7 @@ class JudoscaleReporterTest {
         reporter.reportMetrics();
 
         // Should have utilization + queue time + app time
-        verify(apiClient).reportMetrics(argThat(metrics ->
+        verify(apiClient).reportMetrics(argThat((List<Metric> metrics) ->
             metrics.size() == 3 &&
             metrics.stream().anyMatch(m -> m.identifier().equals("up")) &&
             metrics.stream().anyMatch(m -> m.identifier().equals("qt")) &&
