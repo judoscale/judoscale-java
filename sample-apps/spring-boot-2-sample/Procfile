@@ -1,1 +1,2 @@
-web: java -jar build/libs/spring-boot-2-sample-0.0.1-SNAPSHOT.jar --server.port=$PORT
+proxy: PORT=7980 npx judoscale-adapter-proxy-server
+web: DYNO=web.1 ../../gradlew bootRun --args='--server.port=8080'

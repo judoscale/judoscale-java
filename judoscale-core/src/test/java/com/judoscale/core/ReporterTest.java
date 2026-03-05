@@ -145,13 +145,22 @@ class ReporterTest {
 
     // Test implementations
 
-    private static class TestApiClient implements ApiClient {
+    private static class TestApiClient extends ApiClientBase {
         int reportedMetricsCount = 0;
+
+        TestApiClient() {
+            super(new ConfigBase(), new Adapter("test", "1.0.0", null));
+        }
 
         @Override
         public boolean reportMetrics(java.util.List<Metric> metrics) {
             reportedMetricsCount = metrics.size();
             return true;
+        }
+
+        @Override
+        protected HttpResult sendRequest(String url, String json) {
+            return HttpResult.success(200, "");
         }
     }
 }
