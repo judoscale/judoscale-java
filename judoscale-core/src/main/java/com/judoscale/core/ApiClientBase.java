@@ -112,7 +112,6 @@ public abstract class ApiClientBase {
 
             if (attempt < MAX_RETRIES) {
                 long delayMs = (long) (250 * Math.pow(2, attempt - 1));
-                logger.log(Level.FINE, "Retry {0} after error (waiting {1}ms): {2}", new Object[]{attempt, delayMs, error.getMessage()});
                 try {
                     Thread.sleep(delayMs);
                 } catch (InterruptedException ignored) {
