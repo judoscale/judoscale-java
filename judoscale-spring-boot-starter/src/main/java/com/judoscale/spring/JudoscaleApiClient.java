@@ -3,6 +3,7 @@ package com.judoscale.spring;
 import com.judoscale.core.Adapter;
 import com.judoscale.core.ApiClientBase;
 import com.judoscale.core.ReportBuilder;
+import org.springframework.boot.SpringBootVersion;
 
 import java.io.IOException;
 import java.net.URI;
