@@ -46,7 +46,7 @@ public class JudoscaleApiClient extends ApiClientBase {
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
-                .timeout(Duration.ofSeconds(10))
+                .timeout(Duration.ofSeconds(5))
                 .build();
 
             HttpResponse<String> response = httpClient.send(request,
