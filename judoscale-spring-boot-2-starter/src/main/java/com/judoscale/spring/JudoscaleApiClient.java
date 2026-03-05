@@ -12,8 +12,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -24,7 +22,6 @@ import java.io.IOException;
  */
 public class JudoscaleApiClient extends ApiClientBase implements Closeable {
 
-    private static final Logger logger = LoggerFactory.getLogger(JudoscaleApiClient.class);
     private static final Adapter ADAPTER = new Adapter(
         "judoscale-spring-boot-2",
         ReportBuilder.loadAdapterVersion(JudoscaleApiClient.class),
@@ -82,7 +79,7 @@ public class JudoscaleApiClient extends ApiClientBase implements Closeable {
     public void close() throws IOException {
         if (httpClient != null) {
             httpClient.close();
-            logger.debug("HTTP client closed");
+            logger.fine("HTTP client closed");
         }
     }
 }

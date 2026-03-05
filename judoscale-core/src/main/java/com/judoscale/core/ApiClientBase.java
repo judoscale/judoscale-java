@@ -1,10 +1,9 @@
 package com.judoscale.core;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Abstract base class for Judoscale API clients.
@@ -13,7 +12,7 @@ import java.util.List;
  */
 public abstract class ApiClientBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(ApiClientBase.class);
+    protected static final Logger logger = Logger.getLogger(ApiClientBase.class.getName());
     private static final int MAX_RETRIES = 3;
     private static final long RETRY_DELAY_MS = 10;
 
@@ -84,7 +83,7 @@ public abstract class ApiClientBase {
 
     public boolean reportMetrics(List<Metric> metrics) {
         if (!config.isConfigured()) {
-            logger.debug("Judoscale API URL not configured, skipping report");
+            logger.fine("Judoscale API URL not configured, skipping report");
             return false;
         }
 
@@ -92,17 +91,17 @@ public abstract class ApiClientBase {
         String url = config.getApiBaseUrl() + "/v3/reports";
 
         for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-            logger.debug("Posting {} bytes to {}", json.length(), url);
+            logger.log(Level.FINE, "Posting {0} bytes to {1}", new Object[]{json.length(), url});
 
             HttpResult result = sendRequest(url, json);
 
             if (result.isSuccess()) {
-                logger.debug("Reported successfully");
+                logger.fine("Reported successfully");
                 return true;
             }
 
             if (result.isHttpError()) {
-                logger.error("Reporter failed: {} - {}", result.getStatusCode(), result.getBody());
+                logger.log(Level.SEVERE, "Reporter failed: {0} - {1}", new Object[]{result.getStatusCode(), result.getBody()});
                 return false;
             }
 
@@ -113,7 +112,7 @@ public abstract class ApiClientBase {
             }
 
             if (attempt < MAX_RETRIES) {
-                logger.debug("Retry {} after error: {}", attempt, error.getMessage());
+                logger.log(Level.FINE, "Retry {0} after error: {1}", new Object[]{attempt, error.getMessage()});
                 try {
                     Thread.sleep(RETRY_DELAY_MS);
                 } catch (InterruptedException ignored) {
@@ -121,7 +120,7 @@ public abstract class ApiClientBase {
                     return false;
                 }
             } else {
-                logger.error("Could not connect to {}: {}", url, error.getMessage());
+                logger.log(Level.SEVERE, "Could not connect to {0}: {1}", new Object[]{url, error.getMessage()});
                 return false;
             }
         }
