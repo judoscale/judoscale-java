@@ -14,7 +14,6 @@ public abstract class ApiClientBase {
 
     protected static final Logger logger = Logger.getLogger(ApiClientBase.class.getName());
     private static final int MAX_RETRIES = 3;
-    private static final long RETRY_DELAY_MS = 10;
 
     private final ConfigBase config;
     private final Adapter adapter;
@@ -112,9 +111,9 @@ public abstract class ApiClientBase {
             }
 
             if (attempt < MAX_RETRIES) {
-                logger.log(Level.FINE, "Retry {0} after error: {1}", new Object[]{attempt, error.getMessage()});
+                long delayMs = (long) (250 * Math.pow(2, attempt - 1));
                 try {
-                    Thread.sleep(RETRY_DELAY_MS);
+                    Thread.sleep(delayMs);
                 } catch (InterruptedException ignored) {
                     Thread.currentThread().interrupt();
                     return false;
