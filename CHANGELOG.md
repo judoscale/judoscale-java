@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6](https://github.com/judoscale/judoscale-java/compare/judoscale-java-v0.1.5...judoscale-java-v0.1.6) (2026-03-05)
+
+
+### Bug Fixes
+
+* Add exponential backoff to retry attempts when sending API requests ([#12](https://github.com/judoscale/judoscale-java/issues/12)) ([26f04dc](https://github.com/judoscale/judoscale-java/commit/26f04dc685200fb0b3d29de8e1e52d229b8a9ed3))
+
 ## [0.1.5](https://github.com/judoscale/judoscale-java/compare/judoscale-java-v0.1.4...judoscale-java-v0.1.5) (2026-02-09)
 
 
